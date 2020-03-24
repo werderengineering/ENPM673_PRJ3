@@ -13,10 +13,10 @@ print(cv2.__version__)
 
 flag = False
 prgRun = True
+getdata=True
 
 def main(prgRun):
     problem = 1
-    # problem = int(input('Which part would you like to run? \nEnter 1 for ngihtime image . \nEnter 2 for the firt part of the lane finder. \nEnter 3 for the second part of the lane finder (Challenge video): '))
 
     video = cv2.VideoCapture('detectbuoy.avi')
 
@@ -33,6 +33,21 @@ def main(prgRun):
             cv2.imshow('Original Frame', frame)
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
+
+            if getdata==True:
+                getdata(frame)
+
+            else
+
+                # Gaussian = getgauss(frame)
+                # Expectation = getEM()
+
+                circleframe = frame
+
+
+
+
+
 
 
     prgRun=False
