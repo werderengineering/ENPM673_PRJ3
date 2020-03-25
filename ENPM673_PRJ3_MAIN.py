@@ -4,6 +4,8 @@ from __main__ import *
 import matplotlib.pyplot as plt
 import imutils
 
+from getData import *
+
 # Hello?
 
 print('Imports Complete')
@@ -25,30 +27,24 @@ def main(prgRun):
         # Capture frame-by-frame
         ret, frame = video.read()
         if ret == True:
-            frame = imutils.resize(frame, width=320, height=180)
+            # frame = imutils.resize(frame, width=320, height=180)
             frame.shape
             ogframe = frame
             clnframe = frame
             resetframe = frame
-            cv2.imshow('Original Frame', frame)
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
+            # cv2.imshow('Original Frame', frame)
+            # if cv2.waitKey(25) & 0xFF == ord('q'):
+            #     break
 
             if getdata==True:
-                getdata(frame)
+                buildData(frame)
 
-            else
+            else:
 
                 # Gaussian = getgauss(frame)
                 # Expectation = getEM()
 
                 circleframe = frame
-
-
-
-
-
-
 
     prgRun=False
     return prgRun
