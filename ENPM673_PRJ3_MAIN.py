@@ -7,6 +7,7 @@ import os
 
 from getData import *
 from histogramImages import*
+from GMM import *
 
 # Hello?
 
