@@ -3,8 +3,10 @@ import cv2
 from __main__ import *
 import matplotlib.pyplot as plt
 import imutils
+import os
 
 from getData import *
+from histogramImages import*
 
 # Hello?
 
@@ -15,10 +17,14 @@ print(cv2.__version__)
 
 flag = False
 prgRun = True
-getdata=True
+getdata = False
 
 def main(prgRun):
     problem = 1
+
+    Ohb, Ohg, Ohr = orangeHist()
+    Ghb, Ghg, Ghr = greenHist()
+    Yhb, Yhg, Yhr = yellowHist()
 
     video = cv2.VideoCapture('detectbuoy.avi')
 
@@ -40,6 +46,8 @@ def main(prgRun):
                 buildData(frame)
 
             else:
+
+
 
                 # Gaussian = getgauss(frame)
                 # Expectation = getEM()
