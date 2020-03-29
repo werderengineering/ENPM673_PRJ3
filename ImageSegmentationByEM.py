@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import random
 
 def tryCustomGeneratedData(size=(50, 50), showFigure=True):
     """generate a group of data follow gaussian distribution.
@@ -43,7 +43,7 @@ def GaussianPDF(x, mean, covar):
 
 def responsibilities(point_set, mean_set, covar_set, alpha_set):
     """compute the conditional probability of a color label given the
-    color observation and is called the Posterior (responsibilities)
+    color observation, aka the Posterior (responsibilities)
     Args:
         point_set: a set contains points in column
         mean_set: k means of the n-Dimension gaussian distribution in this point set
@@ -58,33 +58,63 @@ def responsibilities(point_set, mean_set, covar_set, alpha_set):
     assert mean_set[0].size[1] == covar_set[0].size[1]  # dimension
     assert len(mean_set) == len(covar_set) == len(alpha_set)    # k
 
+    # extract parameters
+    k = len(mean_set)
     # compute the responsibilities before normalization
-    responsibilities = {}
-    for k in range(len(mean_set)):
+    responsibilities = []
+    for index_cluster in range(k):
+        """for each cluster, compute the weightedLikelihoods, 
+        and store them in the dictionary called responsibilities"""
         mean = mean_set[k]
         covar = covar_set[k]
         alpha = alpha_set[k]
         weightedLikelihoods = [alpha*GaussianPDF(point, mean, covar) for point in point_set]
         responsibilities[k] = weightedLikelihoods
     # responsibilities normalization
-
+    sums_responsibilityAllCluster = [sum(responsibility) for responsibility in zip(*responsibilities)]  # for each of data point, get sum of all culster responsibility
+    for index_cluster in range(k):
+        responsibilities[index_cluster] = [responsibility / sums_responsibilityAllCluster for responsibility, sums_responsibilityAllCluster in zip(responsibilities[index_cluster], sums_responsibilityAllCluster)]
+    # shape check
+    assert len(responsibilities) == len(mean_set)
+    assert len(responsibilities[0]) == len(point_set[0].size)
 
     return responsibilities
 
 
-def weightedLikelihood(point, mean, covar, alpha):
-    """compute the conditional probability of color observation given the color label
-     (likelihood) of a color label, aka the prior
+def likelyhoodMaximization(point_list, k):
+    """  find the parameters weight factors, means, covariances such that those would maximize
+        the corectness of  conditional probability of a color label given the color observation.
         Args:
-            point_set: a set contains points in column
-            mean: means of the n-Dimension gaussian distribution
-            covar: covariance matrix of the n-Dimension gaussian distribution
-            alpha: alpha represent weight of this n-Dimension gaussian distribution in the whole mixture distribution
+            point_list: a set contains points in column
         Return:
             the pdf of the this point given mean and covariance
         """
-    assert point == mean.size  # dimension
-    assert mean.size[1] == covar.size[0]  # dimension
-    assert mean.size[1] == covar.size[1]  # dimension
-    weightedLikelihood = GaussianPDF(point, mean, covar)
-    return alpha*weightedLikelihood
+    # make sure the input list is correct
+    assert type(point_list) == list  # input format is ok
+    assert point_list[0].size == 3  # dimension check
+
+    # initialization of means and covariances
+    dimension = point_list[0].size
+    alpha_list = [1/k] * k
+    mean_list = random.choices(point_list, k=k)
+    covar_list = [np.eye(dimension, dimension) for index_cluster in range(k)]
+    for index, covar in enumerate(covar_list):
+        var_rand = 255 * np.random.rand(dimension)
+        var_rand = list(var_rand.astype(int))
+        covar_list[index] = np.fill_diagonal(covar, var_rand)
+
+    # iteration for coverage
+
+    # calculate the normalized responsibilities of each cluster
+    respons = responsibilities(point_list, mean_list, covar_list, alpha_list)
+    # update means, covariances, and weight factors
+    point_array = np.asarray(point_list)
+    mean_array_list = [np.asarray(mean) for mean in mean_list]
+
+    for index in range(k):
+        respon = respons[index]
+        # make respon as numpy array
+        mean_array_list[index] = np.dot(point_array)/sum(respon)
+        # numpy array dot
+
+    return mean_list, covar_list
