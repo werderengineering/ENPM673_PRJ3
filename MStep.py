@@ -5,6 +5,7 @@ def M_step(pdf):
     w=w(pdf)
     m=u(pdf)
     c=sig(m,pdf)
+    retrun w,m,c
 
 def w(pdf):
     psum=[]
