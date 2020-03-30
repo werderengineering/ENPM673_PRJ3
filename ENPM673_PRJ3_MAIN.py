@@ -40,14 +40,15 @@ def main(prgRun):
             ogframe = frame
             clnframe = frame
             resetframe = frame
-            # cv2.imshow('Original Frame', frame)
-            # if cv2.waitKey(25) & 0xFF == ord('q'):
-            #     break
+            cv2.imshow('Original Frame', frame)
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                break
 
             if getdata==True:
                 buildData(frame)
 
             else:
+                print("here")
 
 
 

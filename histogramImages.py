@@ -6,6 +6,7 @@ def orangeHist():
     redhistr = []
     bluehistr = []
     greenhstr = []
+    Otrain=[]
     for filename in os.listdir("orangeSamples"):
         image = cv2.imread(os.path.join("orangeSamples", filename))
 
@@ -39,10 +40,18 @@ def orangeHist():
                     redhistr=histr
 
 
-            plt.xlim([0, 256])
+            # plt.xlim([0, 256])
         # print('\n')
         # print(bluehistr)
         count += 1
+        for j in range(image.shape[0]):
+            Otrain.append(image[i, :])
+    Otrain = np.array(Otrain)
+
+    np.save('Otrain', Otrain)
+
+
+
     # plt.show()
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
@@ -62,6 +71,7 @@ def greenHist():
     redhistr = []
     bluehistr = []
     greenhstr = []
+    Gtrain=[]
     for filename in os.listdir("greenSamples"):
         image = cv2.imread(os.path.join("greenSamples", filename))
 
@@ -95,10 +105,15 @@ def greenHist():
                     redhistr=histr
 
 
-            plt.xlim([0, 256])
+            # plt.xlim([0, 256])
         # print('\n')
         # print(bluehistr)
         count += 1
+        for j in range(image.shape[0]):
+            Gtrain.append(image[i, :])
+    Gtrain = np.array(Gtrain)
+
+    np.save('Gtrain', Gtrain)
     # plt.show()
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
@@ -120,6 +135,7 @@ def yellowHist():
     redhistr = []
     bluehistr = []
     greenhstr = []
+    Ytrain=[]
     for filename in os.listdir("yellowSamples"):
         image = cv2.imread(os.path.join("yellowSamples", filename))
 
@@ -153,10 +169,15 @@ def yellowHist():
                     redhistr=histr
 
 
-            plt.xlim([0, 256])
+            # plt.xlim([0, 256])
         # print('\n')
         # print(bluehistr)
         count += 1
+        for j in range(image.shape[0]):
+            Ytrain.append(image[i, :])
+    Ytrain = np.array(Ytrain)
+
+    np.save('Ytrain', Ytrain)
     # plt.show()
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
