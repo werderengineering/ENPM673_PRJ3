@@ -4,10 +4,11 @@ from __main__ import *
 import matplotlib.pyplot as plt
 import imutils
 import os
+import random
 
 from getData import *
 from histogramImages import*
-from GMM import *
+
 
 # Hello?
 
