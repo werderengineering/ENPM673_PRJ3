@@ -9,7 +9,7 @@ import random
 #Set Train = 1 fo
 #training
 Train = 1
-K = 7
+K = 2
 
 
 
@@ -274,7 +274,7 @@ def likelyhoodMaximization(point_list, k):
 # w=np.load('weights.npy')
 # Sigma=np.load('sigma.npy')
 # mean=np.load('mean.npy')
-point_list = np.load('xtrain.npy')
+point_list = np.load('yellowTrain.npy')
 mean, Sigma, w  = likelyhoodMaximization(list(point_list), K)
 w = np.asarray(w)
 Sigma = np.asarray(Sigma)
