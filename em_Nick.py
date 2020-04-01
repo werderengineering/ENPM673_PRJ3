@@ -17,7 +17,11 @@ def GaussianPDF(x, mean, covar):
     return pdf
 
 #compute the conditional probability of a color label given the color observation
-def responsibilities(point_set, mean_set, covar_set, alpha_set):
+def responsibilities(point_set, mean_set, covar_set, alpha_set,dimension, k):
+    point_list=point_set
+    mean_list=mean_set
+    covar_list=covar_set
+
     # extract parameters
     k = len(mean_set)
     # compute the responsibilities before normalization
@@ -33,9 +37,23 @@ def responsibilities(point_set, mean_set, covar_set, alpha_set):
     for index_cluster in range(k):
         """for each responsibility, divide it by the sum of responsibility from all culsters"""
         respon = respons[index_cluster]
-        respons[index_cluster] = [(responsibility / sums_responsibility_eachPooint_AllCluster) for responsibility, sums_responsibility_eachPooint_AllCluster in zip(respon, sums_responsibilityAllCluster)]
 
-    return respons
+        try:
+            respons[index_cluster] = [(responsibility / sums_responsibility_eachPooint_AllCluster) for responsibility, sums_responsibility_eachPooint_AllCluster in zip(respon, sums_responsibilityAllCluster)]
+            # shape check
+            assert len(respons) == len(mean_set)  # check k
+            assert type(respons[0]) == list  # check type of list
+            assert type(respons[0][0]) == float  # check responsibility type
+            assert len(respons[0]) == len(point_set)  # check number of sample
+        except:
+            mean_list, covar_list, alpha_list = initilizeGassuainClusterModelParameters(point_list, dimension, k)
+            print("Rebuilding: Failure in cluster Initilization")
+
+            point_list, mean_list, covar_list, respons = responsibilities(point_list, mean_list, covar_list, alpha_list,
+                                                                          dimension, k)
+
+
+    return point_list, mean_list, covar_list,respons
 
 #initialization of means and covariances
 def initilizeGassuainClusterModelParameters(point_list, dimension, k):
@@ -58,7 +76,7 @@ def likelyhoodMaximization(point_list, k):
     mean_list, covar_list, alpha_list = initilizeGassuainClusterModelParameters(point_list, dimension, k)
     for interator in range(1000):
         # calculate the normalized responsibilities of each point of each cluster: first index cluster, second index point
-        respons = responsibilities(point_list, mean_list, covar_list, alpha_list)
+        point_list, mean_list, covar_list,respons = responsibilities(point_list, mean_list, covar_list, alpha_list,dimension, k)
         # update means, covariances, and weight factors
         mean_previous_list = mean_list.copy()   # store the previous means
         point_array = np.asarray(point_list)    # cast list of points to array of points
@@ -86,12 +104,32 @@ def likelyhoodMaximization(point_list, k):
 
     return mean_list, covar_list, alpha_list
 
-K = 2
-point_list = np.load('orangeTrain.npy')
-mean, Sigma, w = likelyhoodMaximization(list(point_list), K)
-w = np.asarray(w)
-Sigma = np.asarray(Sigma)
-mean = np.asarray(mean)
+def getLikelihood(K,vid):
+    point_list = np.load(vid)
+    mean, Sigma, w = likelyhoodMaximization(list(point_list), K)
+    w = np.asarray(w)
+    Sigma = np.asarray(Sigma)
+    mean = np.asarray(mean)
+    return mean,Sigma,w,K
+
+print("Getting Orange Parameters")
+meanO,SigmaO,wO, KO=getLikelihood(2, 'orangeTrain.npy')
+
+print("Getting Yellow Parameters")
+meanY,SigmaY,wY, KY=getLikelihood(2, 'yellowTrain.npy')
+
+print("Getting Green Parameters")
+meanG,SigmaG,wG, KG=getLikelihood(2, 'greenTrain.npy')
+
+print("All parameters attained")
+
+mean=meanG
+Sigma=SigmaG
+w=wG
+K=KG
+
+print("detecting")
+
 
 #########################################Output
 

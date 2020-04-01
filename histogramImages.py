@@ -113,7 +113,7 @@ def greenHist():
             Gtrain.append(image[i, :])
     Gtrain = np.array(Gtrain)
 
-    np.save('Gtrain', Gtrain)
+    # np.save('Gtrain', Gtrain)
     # plt.show()
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
@@ -177,7 +177,7 @@ def yellowHist():
             Ytrain.append(image[i, :])
     Ytrain = np.array(Ytrain)
 
-    np.save('Ytrain', Ytrain)
+    # np.save('Ytrain', Ytrain)
     # plt.show()
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
