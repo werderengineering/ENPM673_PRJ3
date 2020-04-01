@@ -112,6 +112,8 @@ while (cap.isOpened()):
     for k in range(K):
         likelihoods[k] = w[k] * mvn.pdf(image, mean[k], Sigma[k],allow_singular=True)  # ((2.0 * np.pi) ** (-d / 2.0)) * (1.0 / (np.linalg.det(Sigma[k]) ** 0.5)) * np.exp(-0.5 * np.sum(np.multiply(x_mean * Sinv, x_mean), axis=1))
         log_likelihood = likelihoods.sum(0)
+        # likelihoods[:,k:k+1] = w[k] *GaussianPDF(image, mean[k], Sigma[k])
+        # log_likelihood = likelihoods.sum(1)
     log_likelihood = np.reshape(log_likelihood, (nx, ny))
     log_likelihood[log_likelihood > np.max(log_likelihood) / 3] = 255
 
