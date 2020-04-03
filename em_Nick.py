@@ -60,7 +60,7 @@ def responsibilities(point_set, mean_set, covar_set, alpha_set, dimension, k):
             assert len(respons[0]) == len(point_set)  # check number of sample
         except:
             mean_list, covar_list, alpha_list = initilizeGassuainClusterModelParameters(point_list, dimension, k)
-            print("Rebuilding: Failure in cluster Initilization - Division by zero")
+            print("Rebuilding: Failure in cluster Initilization - Divide by zero")
 
             point_list, mean_list, covar_list, respons = responsibilities(point_list, mean_list, covar_list, alpha_list,
                                                                           dimension, k)
@@ -103,8 +103,8 @@ def likelyhoodMaximization(point_list, k):
             mean_list[index] = (np.dot(point_array.T, respon_array) / sum(respon)).reshape((dimension))
             """update covariance"""
             # compute the covariance of each point from point list
-            covar_list_eachPoint = [np.dot((point.reshape((1, 3)) - mean_list[index].reshape((1, 3))).T,
-                                           (point.reshape((1, 3)) - mean_list[index].reshape((1, 3)))) for point in
+            covar_list_eachPoint = [np.dot((point.reshape((1, dimension)) - mean_list[index].reshape((1, dimension))).T,
+                                           (point.reshape((1, dimension)) - mean_list[index].reshape((1, dimension)))) for point in
                                     point_list]
             # sum up all the product of each point's responsibility and covariance
             covar_sum = sum([respon_onePoint * covar_onePoint for respon_onePoint, covar_onePoint in
@@ -139,23 +139,27 @@ def genLogLike(image, mean, Sigma, w, nx, ny, div, K):
     return log_likelihood
 
 
-def getLikelihood(K, vid):
+def getLikelihood(vid, K, color):
     point_list = np.load(vid)
+    if color == 'o':
+        point_list = np.delete(point_list, slice(2), axis=1)
+
     mean, Sigma, w = likelyhoodMaximization(list(point_list), K)
     w = np.asarray(w)
     Sigma = np.asarray(Sigma)
     mean = np.asarray(mean)
     return mean, Sigma, w, K
 
+
 def em_NickMain():
     print("Getting Orange Parameters")
-    meanO, SigmaO, wO, KO = getLikelihood(3, 'OTrain.npy')
+    meanO, SigmaO, wO, KO = getLikelihood('orangeTrain.npy', 2, color='o')
 
     print("Getting Yellow Parameters")
-    meanY,SigmaY,wY, KY=getLikelihood(2, 'YTrain.npy')
+    meanY,SigmaY,wY, KY=getLikelihood('yellowTrain.npy', 2, color='y')
 
     print("Getting Green Parameters")
-    meanG,SigmaG,wG, KG=getLikelihood(2, 'GTrain.npy')
+    meanG,SigmaG,wG, KG=getLikelihood('greenTrain.npy', 2, color='g')
 
     print("All parameters attained")
 
