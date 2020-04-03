@@ -1,7 +1,7 @@
 from __main__ import *
 
 
-def orangeHist():
+def orangeHist(Showflag,SaveFlag):
     count=0
     redhistr = []
     bluehistr = []
@@ -47,26 +47,26 @@ def orangeHist():
         for j in range(image.shape[0]):
             Otrain.append(image[i, :])
     Otrain = np.array(Otrain)
-
-    np.save('Otrain', Otrain)
+    if SaveFlag:
+        np.save('Otrain', Otrain)
 
 
 
     # plt.show()
+    if Showflag:
+        fig, (ax1, ax2, ax3) = plt.subplots(3)
+        fig.suptitle('orangeSample All')
+        ax1.plot(bluehistr, color='b')
+        ax2.plot(greenhstr, color='g')
+        ax3.plot(redhistr, color='r')
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3)
-    fig.suptitle('orangeSample All')
-    ax1.plot(bluehistr, color='b')
-    ax2.plot(greenhstr, color='g')
-    ax3.plot(redhistr, color='r')
-
-    plt.xlim([0, 256])
-    plt.show()
+        plt.xlim([0, 256])
+        plt.show()
 
     print("Done")
     return bluehistr,greenhstr,redhistr
 
-def greenHist():
+def greenHist(Showflag,SaveFlag):
     count=0
     redhistr = []
     bluehistr = []
@@ -112,25 +112,25 @@ def greenHist():
         for j in range(image.shape[0]):
             Gtrain.append(image[i, :])
     Gtrain = np.array(Gtrain)
-
-    # np.save('Gtrain', Gtrain)
+    if SaveFlag:
+        np.save('Gtrain', Gtrain)
     # plt.show()
+    if Showflag:
+        fig, (ax1, ax2, ax3) = plt.subplots(3)
+        fig.suptitle('greenSamples All')
+        ax1.plot(bluehistr, color='b')
+        ax2.plot(greenhstr, color='g')
+        ax3.plot(redhistr, color='r')
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3)
-    fig.suptitle('greenSamples All')
-    ax1.plot(bluehistr, color='b')
-    ax2.plot(greenhstr, color='g')
-    ax3.plot(redhistr, color='r')
-
-    plt.xlim([0, 256])
-    plt.show()
+        plt.xlim([0, 256])
+        plt.show()
 
     print("Done")
 
     return bluehistr,greenhstr,redhistr
 
 
-def yellowHist():
+def yellowHist(Showflag,SaveFlag):
     count=0
     redhistr = []
     bluehistr = []
@@ -176,18 +176,18 @@ def yellowHist():
         for j in range(image.shape[0]):
             Ytrain.append(image[i, :])
     Ytrain = np.array(Ytrain)
-
-    # np.save('Ytrain', Ytrain)
+    if SaveFlag:
+        np.save('Ytrain', Ytrain)
     # plt.show()
+    if Showflag:
+        fig, (ax1, ax2, ax3) = plt.subplots(3)
+        fig.suptitle('yellowSamples All')
+        ax1.plot(bluehistr, color='b')
+        ax2.plot(greenhstr, color='g')
+        ax3.plot(redhistr, color='r')
 
-    fig, (ax1, ax2, ax3) = plt.subplots(3)
-    fig.suptitle('yellowSamples All')
-    ax1.plot(bluehistr, color='b')
-    ax2.plot(greenhstr, color='g')
-    ax3.plot(redhistr, color='r')
-
-    plt.xlim([0, 256])
-    plt.show()
+        plt.xlim([0, 256])
+        plt.show()
 
     print("Done")
 

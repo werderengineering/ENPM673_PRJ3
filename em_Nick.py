@@ -32,7 +32,14 @@ def responsibilities(point_set, mean_set, covar_set, alpha_set, dimension, k):
         mean = mean_set[index_cluster]
         covar = covar_set[index_cluster]
         alpha = alpha_set[index_cluster]
-        weightedLikelihoods = [alpha * GaussianPDF(point, mean, covar) for point in point_set]
+        try:
+            weightedLikelihoods = [alpha * GaussianPDF(point, mean, covar) for point in point_set]
+        except:
+            mean_list, covar_list, alpha_list = initilizeGassuainClusterModelParameters(point_list, dimension, k)
+            print("Rebuilding: Failure in cluster Initilization - Singular Matrix")
+
+            point_list, mean_list, covar_list, respons = responsibilities(point_list, mean_list, covar_list, alpha_list,
+                                                                          dimension, k)
         respons.append(weightedLikelihoods)
     # responsibilities normalization
     sums_responsibilityAllCluster = [sum(responsibility) for responsibility in
@@ -53,7 +60,7 @@ def responsibilities(point_set, mean_set, covar_set, alpha_set, dimension, k):
             assert len(respons[0]) == len(point_set)  # check number of sample
         except:
             mean_list, covar_list, alpha_list = initilizeGassuainClusterModelParameters(point_list, dimension, k)
-            print("Rebuilding: Failure in cluster Initilization")
+            print("Rebuilding: Failure in cluster Initilization - Divide by zero")
 
             point_list, mean_list, covar_list, respons = responsibilities(point_list, mean_list, covar_list, alpha_list,
                                                                           dimension, k)
@@ -140,116 +147,117 @@ def getLikelihood(K, vid):
     mean = np.asarray(mean)
     return mean, Sigma, w, K
 
+def em_NickMain():
+    print("Getting Orange Parameters")
+    meanO, SigmaO, wO, KO = getLikelihood(2, 'orangeTrain.npy')
 
-print("Getting Orange Parameters")
-meanO, SigmaO, wO, KO = getLikelihood(2, 'orangeTrain.npy')
+    print("Getting Yellow Parameters")
+    meanY,SigmaY,wY, KY=getLikelihood(2, 'yellowTrain.npy')
 
-print("Getting Yellow Parameters")
-meanY,SigmaY,wY, KY=getLikelihood(2, 'yellowTrain.npy')
+    print("Getting Green Parameters")
+    meanG,SigmaG,wG, KG=getLikelihood(2, 'greenTrain.npy')
 
-print("Getting Green Parameters")
-meanG,SigmaG,wG, KG=getLikelihood(2, 'greenTrain.npy')
-
-print("All parameters attained")
-
-
-print("detecting")
-
-#########################################Output
-
-name = "detectbuoy.avi"
-cap = cv2.VideoCapture(name)
-images = []
-while (cap.isOpened()):
-    success, frame = cap.read()
-    if success == False:
-        break
-
-    nx, ny, ch = frame.shape
-    image = np.reshape(frame, (nx * ny, ch))
-
-    log_likelihoodO = genLogLike(image, meanO, SigmaO, wO, nx, ny, 3, KO)
-    log_likelihoodY = genLogLike(image, meanY, SigmaY, wY, nx, ny, 5, KY)
-    log_likelihoodG = genLogLike(image, meanG, SigmaG, wG, nx, ny, 6, KG)
-
-    outputO = np.zeros_like(frame)
-    outputY = np.zeros_like(frame)
-    outputG = np.zeros_like(frame)
-    # output[:, :, 0] = log_likelihood
-    # output[:, :, 1] = log_likelihood
-    outputO[:, :, 2] = log_likelihoodO
-    outputY[:, :, 2] = log_likelihoodY
-    outputG[:, :, 2] = log_likelihoodG
-
-    blurO = cv2.GaussianBlur(outputO, (3, 3), 5)
-    edgeO = cv2.Canny(blurO, 50, 255)
-    cntsO, _ = cv2.findContours(edgeO, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cnts_sortedO, _ = contours.sort_contours(cntsO, method="left-to-right")
-    hullO = cv2.convexHull(cnts_sortedO[0])
-    (xO, yO), radO = cv2.minEnclosingCircle(hullO)
-    xO = int(xO)
-    yO = int(yO)
-    # cv2.imshow("Orange", outputO)
-
-    blurY = cv2.GaussianBlur(outputY, (3, 3), 5)
-    edgeY = cv2.Canny(blurY, 50, 255)
-    cntsY, _ = cv2.findContours(edgeY, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cnts_sortedY, _ = contours.sort_contours(cntsY, method="left-to-right")
-    hullY = cv2.convexHull(cnts_sortedY[0])
-    (xY, yY), radY = cv2.minEnclosingCircle(hullY)
-    xY = int(xY)
-    yY = int(yY)
-    # cv2.imshow("Yellow", outputY)
-
-    blurG = cv2.GaussianBlur(outputG, (3, 3), 5)
-    edgeG = cv2.Canny(blurG, 50, 255)
-    cntsG, _ = cv2.findContours(edgeG, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cnts_sortedG, _ = contours.sort_contours(cntsG, method="left-to-right")
-    hullG = cv2.convexHull(cnts_sortedG[0])
-    (xG, yG), radG = cv2.minEnclosingCircle(hullG)
-    xG=int(xG)
-    yG=int(yG)
-    # cv2.imshow("Green", outputG)
+    print("All parameters attained")
 
 
+    print("detecting")
 
-    YO=np.real(np.sqrt((xO-xY)^2+(yO-yY)^2))
-    print('YO',YO)
-    YG=np.real(np.sqrt((xG-xY)^2+(yG-yY)^2))
-    print('YG',YG)
+    ######################################### Output #########################################
 
-    if radY > 7:
-        cv2.circle(frame, (xY, yY), int(radY), (0, 255, 255), 4)
+    name = "detectbuoy.avi"
+    cap = cv2.VideoCapture(name)
+    images = []
+    while (cap.isOpened()):
+        success, frame = cap.read()
+        if success == False:
+            break
+
+        nx, ny, ch = frame.shape
+        image = np.reshape(frame, (nx * ny, ch))
+
+        log_likelihoodO = genLogLike(image, meanO, SigmaO, wO, nx, ny, 3, KO)
+        log_likelihoodY = genLogLike(image, meanY, SigmaY, wY, nx, ny, 5, KY)
+        log_likelihoodG = genLogLike(image, meanG, SigmaG, wG, nx, ny, 3, KG)
+
+        outputO = np.zeros_like(frame)
+        outputY = np.zeros_like(frame)
+        outputG = np.zeros_like(frame)
+        # output[:, :, 0] = log_likelihood
+        # output[:, :, 1] = log_likelihood
+        outputO[:, :, 2] = log_likelihoodO
+        outputY[:, :, 2] = log_likelihoodY
+        outputG[:, :, 1] = log_likelihoodG
+
+        blurO = cv2.GaussianBlur(outputO, (3, 3), 40)
+        blurO = cv2.GaussianBlur(blurO, (3, 3), 40)
+        edgeO = cv2.Canny(blurO, 10, 255)
+        cntsO, _ = cv2.findContours(edgeO, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        cnts_sortedO, _ = contours.sort_contours(cntsO, method="left-to-right")
+        hullO = cv2.convexHull(cnts_sortedO[0])
+        (xO, yO), radO = cv2.minEnclosingCircle(hullO)
+        xO = int(xO)
+        yO = int(yO)
+        cv2.imshow("Orange", edgeO)
+
+        blurY = cv2.GaussianBlur(outputY, (3, 3), 5)
+        edgeY = cv2.Canny(blurY, 50, 255)
+        cntsY, _ = cv2.findContours(edgeY, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        cnts_sortedY, _ = contours.sort_contours(cntsY, method="left-to-right")
+        hullY = cv2.convexHull(cnts_sortedY[0])
+        (xY, yY), radY = cv2.minEnclosingCircle(hullY)
+        xY = int(xY)
+        yY = int(yY)
+        # cv2.imshow("Yellow", outputY)
+
+        blurG = cv2.GaussianBlur(outputG, (3, 3), 20)
+        edgeG = cv2.Canny(blurG, 20, 255)
+        cntsG, _ = cv2.findContours(edgeG, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        cnts_sortedG, _ = contours.sort_contours(cntsG, method="left-to-right")
+        hullG = cv2.convexHull(cnts_sortedG[0])
+        (xG, yG), radG = cv2.minEnclosingCircle(hullG)
+        xG=int(xG)
+        yG=int(yG)
+        # cv2.imshow("Green", outputG)
 
 
-        images.append(frame)
 
-    if radO > 7 and YO>5:
-        cv2.circle(frame, (xO, yO), int(radO), (0, 0, 255), 4)
+        YO=np.real(np.sqrt((xO-xY)^2+(yO-yY)^2))
+        print('YO',YO)
+        YG=np.real(np.sqrt((xG-xY)^2+(yG-yY)^2))
+        print('YG',YG)
 
-
-        images.append(frame)
-
-    if radG > 7 and YG>5:
-        cv2.circle(frame, (xG, yG), int(radG), (0, 255, 0), 4)
+        if radY > 7:
+            cv2.circle(frame, (xY, yY), int(radY), (0, 255, 255), 4)
 
 
-        images.append(frame)
+            images.append(frame)
 
-    else:
+        if radO > 5 and YO>5:
+            cv2.circle(frame, (xO, yO), int(radO), (0, 0, 255), 4)
 
-        images.append(frame)
 
-    cv2.imshow("Final output", frame)
-    cv2.waitKey(1)
+            images.append(frame)
 
-cap.release()
+        if radG > 5 and YG>6:
+            cv2.circle(frame, (xG, yG), int(radG), (0, 255, 0), 4)
 
-#Up to date
-# fourcc = cv2.VideoWriter_fourcc(*'XVID')
-# out = cv2.VideoWriter('3D_gauss_orange.avi', fourcc, 5.0, (640, 480))
-# for image in images:
-#     out.write(image)
-#     cv2.waitKey(10)
 
-# out.release()
+            images.append(frame)
+
+        else:
+
+            images.append(frame)
+
+        cv2.imshow("Final output", frame)
+        cv2.waitKey(1)
+
+    cap.release()
+
+    #Up to date
+    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    # out = cv2.VideoWriter('3D_gauss_orange.avi', fourcc, 5.0, (640, 480))
+    # for image in images:
+    #     out.write(image)
+    #     cv2.waitKey(10)
+
+    # out.release()
