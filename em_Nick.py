@@ -3,6 +3,7 @@ import cv2
 from scipy.stats import multivariate_normal as mvn
 import random
 from imutils import contours
+import pickle
 
 
 # compute the pdf of a n-Dimension gaussian distribution
@@ -148,19 +149,65 @@ def getLikelihood(vid, K, color):
     mean = np.asarray(mean)
     return mean, Sigma, w, K
 
+def saveVar(var,varprint):
+    with open(varprint, 'wb') as f:
+        pickle.dump(var, f)
 
-def em_NickMain():
-    print("Getting Orange Parameters")
-    meanO, SigmaO, wO, KO = getLikelihood('orangeTrain.npy', 2, color='o')
+def openVar(varprint):
+    with open(varprint, 'rb') as f:
+        var= pickle.load(f)
+    return var
 
-    print("Getting Yellow Parameters")
-    meanY,SigmaY,wY, KY = getLikelihood('yellowTrain.npy', 2, color='y')
 
-    print("Getting Green Parameters")
-    meanG,SigmaG,wG, KG = getLikelihood('greenTrain.npy', 2, color='g')
 
-    print("All parameters attained")
+def em_NickMain(LearnFlag):
+    if LearnFlag:
+        print("Getting Orange Parameters")
+        meanO, SigmaO, wO, KO = getLikelihood('OTrain.npy', 2, color='o')
 
+        print("Getting Yellow Parameters")
+        meanY,SigmaY,wY, KY = getLikelihood('YTrain.npy', 2, color='y')
+
+        print("Getting Green Parameters")
+        meanG,SigmaG,wG, KG = getLikelihood('GTrain.npy', 2, color='g')
+
+        print("All parameters attained")
+
+
+        saveVar(meanO,'meanO')
+        saveVar(meanY,'meanY')
+        saveVar(meanG,'meanG')
+
+        saveVar(SigmaO,'SigmaO')
+        saveVar(SigmaY,'SigmaY')
+        saveVar(SigmaG,'SigmaG')
+
+        saveVar(wO,'wO')
+        saveVar(wY,'wY')
+        saveVar(wG,'wG')
+
+        saveVar(KO,'KO')
+        saveVar(KY,'KY')
+        saveVar(KG,'KG')
+
+        print('Done Saving off parameter')
+
+    else:
+        meanO=openVar('meanO')
+        meanY=openVar('meanY')
+        meanG=openVar('meanG')
+
+        SigmaO=openVar('SigmaO')
+        SigmaY=openVar('SigmaY')
+        SigmaG=openVar('SigmaG')
+
+        wO=openVar('wO')
+        wY=openVar('wY')
+        wG=openVar('wG')
+
+        KO=openVar('KO')
+        KY=openVar('KY')
+        KG=openVar('KG')
 
     print("detecting")
 
@@ -199,7 +246,7 @@ def em_NickMain():
         (xO, yO), radO = cv2.minEnclosingCircle(hullO)
         xO = int(xO)
         yO = int(yO)
-        cv2.imshow("Orange", edgeO)
+        # cv2.imshow("Orange", edgeO)
 
         blurY = cv2.GaussianBlur(outputY, (3, 3), 5)
         edgeY = cv2.Canny(blurY, 50, 255)
@@ -234,7 +281,7 @@ def em_NickMain():
 
             images.append(frame)
 
-        if radO > 5 and YO>5:
+        if radO > 5 and YO>6:
             cv2.circle(frame, (xO, yO), int(radO), (0, 0, 255), 4)
 
 

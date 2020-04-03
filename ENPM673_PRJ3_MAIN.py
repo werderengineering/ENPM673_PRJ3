@@ -17,13 +17,28 @@ print(cv2.__version__)
 
 flag = False
 prgRun = True
-getdata = False
-Showflag = False
-SaveFlag = True
+
 
 
 def main(prgRun):
-    problem = 1
+    getdata = False
+    Showflag = False
+    SaveFlag = False
+
+    getdataYN = str.lower(input('Create a data set? Enter |yes| or |no|: '))
+    if getdataYN=='yes':
+        getdata = True
+
+    ShowflagYN = str.lower(input('Show histograms? Enter |yes| or |no|: '))
+    if ShowflagYN == 'yes':
+        Showflag = True
+
+    SaveFlagYN = str.lower(input('Save off data set and train? Enter |yes| or |no|: '))
+    if SaveFlagYN == 'yes':
+        SaveFlag = True
+
+
+    LearnFlag = SaveFlag
 
     Ohb, Ohg, Ohr = orangeHist(Showflag, SaveFlag)
     Ghb, Ghg, Ghr = greenHist(Showflag, SaveFlag)
@@ -48,7 +63,7 @@ def main(prgRun):
 
                 buildData(frame)
     else:
-        em_NickMain()
+        em_NickMain(LearnFlag)
 
 
     prgRun = False
