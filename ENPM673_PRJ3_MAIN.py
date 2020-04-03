@@ -19,7 +19,7 @@ flag = False
 prgRun = True
 getdata = False
 Showflag = False
-SaveFlag = False
+SaveFlag = True
 
 
 def main(prgRun):
@@ -47,8 +47,8 @@ def main(prgRun):
                 #     break
 
                 buildData(frame)
-
-    em_NickMain()
+    else:
+        em_NickMain()
 
 
     prgRun = False

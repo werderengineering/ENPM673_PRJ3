@@ -44,10 +44,11 @@ def orangeHist(Showflag,SaveFlag):
         # print('\n')
         # print(bluehistr)
         count += 1
-        for j in range(image.shape[0]):
-            Otrain.append(image[i, :])
-    Otrain = np.array(Otrain)
+
+
     if SaveFlag:
+        print("Orange Saved")
+        Otrain = import_train_samples("orangeSamples")
         np.save('Otrain', Otrain)
 
 
@@ -109,10 +110,11 @@ def greenHist(Showflag,SaveFlag):
         # print('\n')
         # print(bluehistr)
         count += 1
-        for j in range(image.shape[0]):
-            Gtrain.append(image[i, :])
-    Gtrain = np.array(Gtrain)
+
+
     if SaveFlag:
+        print("Green Saved")
+        Gtrain = import_train_samples("GreenSamples")
         np.save('Gtrain', Gtrain)
     # plt.show()
     if Showflag:
@@ -135,7 +137,6 @@ def yellowHist(Showflag,SaveFlag):
     redhistr = []
     bluehistr = []
     greenhstr = []
-    Ytrain=[]
     for filename in os.listdir("yellowSamples"):
         image = cv2.imread(os.path.join("yellowSamples", filename))
 
@@ -143,6 +144,8 @@ def yellowHist(Showflag,SaveFlag):
         # fig.suptitle('yellowSamples'+str(count))
         color = ('b', 'g', 'r')
         rgbcount=0
+
+
 
         for i, col in enumerate(color):
             histr = cv2.calcHist([image], [i], None, [256], [0, 256])
@@ -173,10 +176,11 @@ def yellowHist(Showflag,SaveFlag):
         # print('\n')
         # print(bluehistr)
         count += 1
-        for j in range(image.shape[0]):
-            Ytrain.append(image[i, :])
-    Ytrain = np.array(Ytrain)
+
+
     if SaveFlag:
+        print("Yellow Saved")
+        Ytrain=import_train_samples("yellowSamples")
         np.save('Ytrain', Ytrain)
     # plt.show()
     if Showflag:
@@ -192,3 +196,14 @@ def yellowHist(Showflag,SaveFlag):
     print("Done")
 
     return bluehistr,greenhstr,redhistr
+
+
+def import_train_samples(samples):
+    train = []
+    for filename in os.listdir(samples):
+        image = cv2.imread(os.path.join(samples, filename))
+        nx,ny,ch = image.shape
+        image = np.reshape(image, (nx * ny, ch))
+        for i in range(image.shape[0]):
+            train.append(image[i,:])
+    return train
