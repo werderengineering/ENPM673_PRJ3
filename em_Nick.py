@@ -60,7 +60,7 @@ def responsibilities(point_set, mean_set, covar_set, alpha_set, dimension, k):
             assert len(respons[0]) == len(point_set)  # check number of sample
         except:
             mean_list, covar_list, alpha_list = initilizeGassuainClusterModelParameters(point_list, dimension, k)
-            print("Rebuilding: Failure in cluster Initilization - Divide by zero")
+            print("Rebuilding: Failure in cluster Initilization - Division by zero")
 
             point_list, mean_list, covar_list, respons = responsibilities(point_list, mean_list, covar_list, alpha_list,
                                                                           dimension, k)
@@ -149,13 +149,13 @@ def getLikelihood(K, vid):
 
 def em_NickMain():
     print("Getting Orange Parameters")
-    meanO, SigmaO, wO, KO = getLikelihood(2, 'orangeTrain.npy')
+    meanO, SigmaO, wO, KO = getLikelihood(3, 'OTrain.npy')
 
     print("Getting Yellow Parameters")
-    meanY,SigmaY,wY, KY=getLikelihood(2, 'yellowTrain.npy')
+    meanY,SigmaY,wY, KY=getLikelihood(2, 'YTrain.npy')
 
     print("Getting Green Parameters")
-    meanG,SigmaG,wG, KG=getLikelihood(2, 'greenTrain.npy')
+    meanG,SigmaG,wG, KG=getLikelihood(2, 'GTrain.npy')
 
     print("All parameters attained")
 
