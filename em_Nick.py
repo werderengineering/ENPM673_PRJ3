@@ -179,7 +179,7 @@ def em_NickMain():
         nx, ny, ch = frame.shape
         image = np.reshape(frame, (nx * ny, ch))
 
-        log_likelihoodO = genLogLike(image, meanO, SigmaO, wO, nx, ny, 3, KO)
+        log_likelihoodO = genLogLike(image[:, 2], meanO, SigmaO, wO, nx, ny, 3, KO)
         log_likelihoodY = genLogLike(image, meanY, SigmaY, wY, nx, ny, 5, KY)
         log_likelihoodG = genLogLike(image, meanG, SigmaG, wG, nx, ny, 3, KG)
 
