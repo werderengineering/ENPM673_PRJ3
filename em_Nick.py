@@ -156,10 +156,10 @@ def em_NickMain():
     meanO, SigmaO, wO, KO = getLikelihood('orangeTrain.npy', 2, color='o')
 
     print("Getting Yellow Parameters")
-    meanY,SigmaY,wY, KY=getLikelihood('yellowTrain.npy', 2, color='y')
+    meanY,SigmaY,wY, KY = getLikelihood('yellowTrain.npy', 2, color='y')
 
     print("Getting Green Parameters")
-    meanG,SigmaG,wG, KG=getLikelihood('greenTrain.npy', 2, color='g')
+    meanG,SigmaG,wG, KG = getLikelihood('greenTrain.npy', 2, color='g')
 
     print("All parameters attained")
 
