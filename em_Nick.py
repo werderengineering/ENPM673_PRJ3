@@ -244,6 +244,8 @@ while (cap.isOpened()):
     cv2.waitKey(1)
 
 cap.release()
+
+#Up to date
 # fourcc = cv2.VideoWriter_fourcc(*'XVID')
 # out = cv2.VideoWriter('3D_gauss_orange.avi', fourcc, 5.0, (640, 480))
 # for image in images:
